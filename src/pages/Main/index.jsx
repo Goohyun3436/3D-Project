@@ -1,13 +1,12 @@
 import { Canvas } from '@react-three/fiber';
 import styled from 'styled-components';
-import Box from '../../components/3DEl/Box';
-import SphereLeva from '../../components/3DEl/SphereLeva';
+import Box from '../../components/Material/Box';
 
 const Main = () => {
   return (
     <MainBox>
       <Canvas>
-        <SphereLeva />
+        <Box />
       </Canvas>
     </MainBox>
   );
