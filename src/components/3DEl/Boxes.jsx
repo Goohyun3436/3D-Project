@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { Box, OrbitControls } from '@react-three/drei';
 
 // Geometry를 생성하는 3가지 방법
-const Cubes = () => {
+const Boxes = () => {
   // 방법.3-1
   const MyBox = (props) => {
     const geom = new THREE.BoxGeometry();
@@ -35,4 +35,4 @@ const Cubes = () => {
   );
 };
 
-export default Cubes;
+export default Boxes;

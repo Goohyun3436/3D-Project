@@ -4,7 +4,7 @@ import { useFrame } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 
 // 전체/상대 좌표계와 회전하는 boxGeometry
-const Cube = () => {
+const Box = () => {
   const refMesh = useRef();
 
   useFrame((state, delta) => {
@@ -44,4 +44,4 @@ const Cube = () => {
   );
 };
 
-export default Cube;
+export default Box;
