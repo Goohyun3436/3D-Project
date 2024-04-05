@@ -1,6 +1,6 @@
 import { Canvas } from '@react-three/fiber';
 import styled from 'styled-components';
-import Box from '../../components/Material/Box';
+import Box from '../../components/MaterialTexture/Box';
 
 const Main = () => {
   return (
