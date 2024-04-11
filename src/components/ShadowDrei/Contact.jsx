@@ -9,7 +9,7 @@ const torusMaterial = new THREE.MeshStandardMaterial({
   metalness: 0.9,
 });
 
-const Box = () => {
+const Contact = () => {
   useFrame((state) => {
     const time = state.clock.elapsedTime;
     const smallSpherePivot = state.scene.getObjectByName('smallSpherePivot');
@@ -54,4 +54,4 @@ const Box = () => {
   );
 };
 
-export default Box;
+export default Contact;
