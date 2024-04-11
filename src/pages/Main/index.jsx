@@ -1,11 +1,11 @@
 import { Canvas } from '@react-three/fiber';
 import styled from 'styled-components';
-import Box from '../../components/Animation/Box';
+import Box from '../../components/Postprocessing/Box';
 
 const Main = () => {
   return (
     <MainBox>
-      <Canvas camera={{ near: 1, far: 100, position: [7, 7, 0] }}>
+      <Canvas shadows camera={{ position: [7, 7, 0] }}>
         <Box />
       </Canvas>
     </MainBox>
