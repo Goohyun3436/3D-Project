@@ -1,6 +1,6 @@
 import { Canvas } from '@react-three/fiber';
 import styled from 'styled-components';
-import Box from '../../components/Postprocessing/Box';
+import Box from './Postprocessing/Box';
 
 const Lecture = () => {
   return (
