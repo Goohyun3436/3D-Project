@@ -1,16 +1,17 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import GlobalStyle from './GlobalStyle';
-import Main from './pages/Main';
+import Lecture from './pages/Lecture';
+import Warehouse from './pages/Warehouse';
 import '../src/styles/fonts/Pretendard-GOV/pretendard.css';
 
 function App() {
   return (
     <div>
       <GlobalStyle />
-      3D Project
       <Routes>
         <Route path='/' element={<Navigate replace to='/main' />} />
-        <Route path='/main' element={<Main />} />
+        <Route path='/lecture' element={<Lecture />} />
+        <Route path='/warehouse' element={<Warehouse />} />
       </Routes>
     </div>
   );
