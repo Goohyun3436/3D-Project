@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import GlobalStyle from './GlobalStyle';
 import Lecture from './pages/Lecture';
 import Warehouse from './pages/Warehouse';
@@ -7,7 +7,7 @@ import '../src/styles/fonts/Pretendard-GOV/pretendard.css';
 
 function App() {
   return (
-    <div>
+    <BrowserRouter>
       <GlobalStyle />
       <Routes>
         <Route path='/' element={<Navigate replace to='/main' />} />
@@ -15,7 +15,7 @@ function App() {
         <Route path='/warehouse' element={<Warehouse />} />
         <Route path='/demo' element={<Demo />} />
       </Routes>
-    </div>
+    </BrowserRouter>
   );
 }
 

@@ -36,10 +36,10 @@ const Spot = () => {
       <ambientLight intensity={0.3} />
       <spotLight
         ref={light}
-        shadow-mapSize={[1024, 1024]}
+        shadow-mapSize={[512, 512]}
         shadow-radius={32} // 그림자 경계도
         shadow-blurSample={32} // 그림자 흐림도
-        shadow-bias={-0.0001} // 그림자 매핑 시 간격
+        shadow-bias={-0.00001} // 그림자 매핑 시 간격
         castShadow
         color='#ffffff'
         intensity={20}
