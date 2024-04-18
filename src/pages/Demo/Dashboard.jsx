@@ -15,6 +15,7 @@ const Dashboard = () => {
 };
 
 const DashboardBox = styled.div`
+  z-index: 999;
   position: absolute;
   right: 0;
   top: 0;

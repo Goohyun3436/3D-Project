@@ -30,7 +30,13 @@ const GlobalStyle = createGlobalStyle`
     -ms-user-select:none;
     user-select:none;
   }
-  
+  img {
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -o-user-select: none;
+    user-select: none;
+  }
   body {
     margin: 0;
     padding: 0;

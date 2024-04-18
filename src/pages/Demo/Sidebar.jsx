@@ -2,7 +2,7 @@ import useStore from '../../store';
 import styled from 'styled-components';
 
 const Sidebar = () => {
-  const { floorList, selectFloor, cctvList, setCctvAlarm } = useStore((state) => state);
+  const { floorList, selectFloor, cctvList, setCctvList } = useStore((state) => state);
 
   return (
     <SidebarBox>
@@ -29,9 +29,9 @@ const Sidebar = () => {
             <li key={cctv.id}>
               {cctv.name}
               {cctv.isAlarm ? (
-                <button onClick={() => setCctvAlarm(cctv.id, { isAlarm: false })}>알람 OFF</button>
+                <button onClick={() => setCctvList(cctv.id, { isAlarm: false, isLive: false })}>알람 OFF</button>
               ) : (
-                <button onClick={() => setCctvAlarm(cctv.id, { isAlarm: true })}>알람 ON</button>
+                <button onClick={() => setCctvList(cctv.id, { isAlarm: true, isLive: true })}>알람 ON</button>
               )}
             </li>
           ))}
@@ -42,6 +42,7 @@ const Sidebar = () => {
 };
 
 const SidebarBox = styled.div`
+  z-index: 999;
   position: absolute;
   left: 0;
   top: 0;

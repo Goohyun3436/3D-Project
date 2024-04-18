@@ -3,11 +3,12 @@ import useStore from '../../store';
 import * as THREE from 'three';
 import { Clone, Environment, Html, OrbitControls, Text, useGLTF, useHelper } from '@react-three/drei';
 import { useFrame, useThree } from '@react-three/fiber';
+import { IoIosClose } from 'react-icons/io';
 import styled from 'styled-components';
 
 const TextStyle = styled.div`
   color: #fff;
-  width: 400px;
+  width: 300px;
   padding: 4px 8px 6px 8px;
   border-radius: 2px;
 
@@ -27,8 +28,48 @@ const TextStyle = styled.div`
   }
 `;
 
-function CCTV({ cctvInfo }) {
-  const { name, resolution, codec, algorithm, position, rotation, angle, isAlarm } = cctvInfo;
+const VideoStyle = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 380px;
+  height: 240px;
+  border-radius: 8px;
+  background: #0000007e;
+
+  .top-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 10%;
+    color: white;
+    .status-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: red;
+      margin-left: 10px;
+    }
+    .close-icon {
+      font-size: 25px;
+      cursor: pointer;
+    }
+  }
+
+  .content {
+    display: flex;
+    align-items: start;
+    justify-content: center;
+    height: 90%;
+
+    img {
+      width: 97%;
+      height: 97%;
+    }
+  }
+`;
+
+function CCTV({ cctvInfo, setCctvList }) {
+  const { id, name, url, resolution, codec, algorithm, position, rotation, angle, isAlarm, isLive } = cctvInfo;
 
   const model = useGLTF('./models/cctv/cctv_camera.glb');
 
@@ -82,6 +123,17 @@ function CCTV({ cctvInfo }) {
               {algorithm}
             </div>
           </TextStyle>
+          {isLive && (
+            <VideoStyle>
+              <div className='top-bar'>
+                <div className='status-dot' />
+                <IoIosClose className='close-icon' onClick={() => setCctvList(id, { isAlarm: false, isLive: false })} />
+              </div>
+              <div className='content'>
+                <img src={url} alt='cctv-img' />
+              </div>
+            </VideoStyle>
+          )}
         </Html>
       </mesh>
 
@@ -111,10 +163,10 @@ function CCTV({ cctvInfo }) {
 function Light() {
   return (
     <>
-      <ambientLight color='#ffffff' intensity={4} />
+      <ambientLight color='#ffffff' intensity={3.8} />
       <directionalLight
         position={[6, 10, 5]}
-        intensity={1}
+        intensity={1.2}
         angle={0.45}
         castShadow
         shadow-mapSize-width={1024}
@@ -147,18 +199,7 @@ function GlbModel({ url }) {
 }
 
 const Map = () => {
-  const { cctvList } = useStore((state) => state);
-
-  const floor1 = useGLTF('./models/map/cnsi-office/floor-1.glb');
-
-  useEffect(() => {
-    floor1.scene.traverse((obj) => {
-      if (obj.isMesh) {
-        obj.castShadow = true;
-        obj.receiveShadow = true;
-      }
-    });
-  }, [floor1.scene]);
+  const { cctvList, setCctvList } = useStore((state) => state);
 
   return (
     <>
@@ -170,7 +211,7 @@ const Map = () => {
       <GlbModel url='./models/map/cnsi-office/floor-1.glb' />
 
       {cctvList.map((cctv) => (
-        <CCTV key={cctv.id} cctvInfo={cctv} />
+        <CCTV key={cctv.id} cctvInfo={cctv} setCctvList={setCctvList} />
       ))}
     </>
   );
