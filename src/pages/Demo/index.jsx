@@ -1,4 +1,4 @@
-import { Canvas } from '@react-three/fiber';
+import { Canvas, useThree } from '@react-three/fiber';
 import Sidebar from './Sidebar';
 import Dashboard from './Dashboard';
 import Map from './Map';
@@ -6,24 +6,17 @@ import styled from 'styled-components';
 
 const Demo = () => {
   return (
-    <WarehouseBox>
-      <Canvas
-        shadows
-        camera={{ fov: 23, position: [50, 90, 120] }}
-        shadow-camera-top={300}
-        shadow-camera-bottom={-300}
-        shadow-camera-left={-300}
-        shadow-camera-right={300}
-      >
+    <DemoBox>
+      <Canvas shadows camera={{ fov: 15, position: [-67, 117, 188] }}>
         <Map />
       </Canvas>
       <Sidebar />
       <Dashboard />
-    </WarehouseBox>
+    </DemoBox>
   );
 };
 
-const WarehouseBox = styled.div`
+const DemoBox = styled.div`
   display: flex;
   align-items: center;
   width: 100%;

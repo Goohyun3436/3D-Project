@@ -2,14 +2,14 @@ import useStore from '../../store';
 import styled from 'styled-components';
 
 const Sidebar = () => {
-  const { floorList, selectFloor } = useStore((state) => state);
+  const { floorList, selectFloor, cctvList, setCctvAlarm } = useStore((state) => state);
 
   return (
     <SidebarBox>
       <section className='floor-nav'>
         <ul>
           CNSI
-          {floorList.reverse().map((nav) => (
+          {[...floorList].reverse().map((nav) => (
             <li
               key={nav.id}
               id={nav.id}
@@ -17,6 +17,22 @@ const Sidebar = () => {
               onClick={(e) => selectFloor(nav.id)}
             >
               {nav.name}
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section className='cam-onoff'>
+        <ul>
+          CCTV 리스트
+          {cctvList.map((cctv) => (
+            <li key={cctv.id}>
+              {cctv.name}
+              {cctv.isAlarm ? (
+                <button onClick={() => setCctvAlarm(cctv.id, { isAlarm: false })}>알람 OFF</button>
+              ) : (
+                <button onClick={() => setCctvAlarm(cctv.id, { isAlarm: true })}>알람 ON</button>
+              )}
             </li>
           ))}
         </ul>
@@ -30,6 +46,7 @@ const SidebarBox = styled.div`
   left: 0;
   top: 0;
   display: flex;
+  flex-direction: column;
   align-items: start;
   padding: 30px 10px;
   width: 20%;
@@ -37,6 +54,10 @@ const SidebarBox = styled.div`
 
   background: #15181c9c;
   color: white;
+
+  section + section {
+    margin-top: 50px;
+  }
 
   ul {
     padding: 7px 10px;
@@ -47,6 +68,15 @@ const SidebarBox = styled.div`
       font-size: 18px;
       &.active {
         background: red;
+      }
+
+      button {
+        color: white;
+        padding: 5px;
+        border: 1px solid gray;
+        border-radius: 5px;
+        margin-left: 10px;
+        text-align: center;
       }
     }
   }

@@ -1,10 +1,35 @@
 import { useRef, useEffect, useState, memo } from 'react';
 import useStore from '../../store';
 import * as THREE from 'three';
-import { Clone, Environment, OrbitControls, useGLTF, useHelper } from '@react-three/drei';
-import { useThree } from '@react-three/fiber';
+import { Clone, Environment, Html, OrbitControls, Text, useGLTF, useHelper } from '@react-three/drei';
+import { useFrame, useThree } from '@react-three/fiber';
+import styled from 'styled-components';
 
-function CCTV({ position, rotation, angle }) {
+const TextStyle = styled.div`
+  color: #fff;
+  width: 400px;
+  padding: 4px 8px 6px 8px;
+  border-radius: 2px;
+
+  .title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 24px;
+    font-weight: 700;
+    text-shadow: 0 2px #000;
+  }
+  .sub {
+    font-size: 14px;
+    font-weight: 500;
+    font-style: italic;
+    opacity: 0.6;
+  }
+`;
+
+function CCTV({ cctvInfo }) {
+  const { name, resolution, codec, algorithm, position, rotation, angle, isAlarm } = cctvInfo;
+
   const model = useGLTF('./models/cctv/cctv_camera.glb');
 
   function calLightPosition(position, rotation, distance = 1) {
@@ -37,8 +62,27 @@ function CCTV({ position, rotation, angle }) {
 
   return (
     <>
-      <mesh castShadow receiveShadow position={position} rotation={rotation}>
+      <mesh
+        castShadow
+        receiveShadow
+        position={position}
+        rotation={[
+          THREE.MathUtils.degToRad(rotation[0]),
+          THREE.MathUtils.degToRad(rotation[1]),
+          THREE.MathUtils.degToRad(rotation[2]),
+        ]}
+      >
         <Clone scale={0.02} object={model.scene} />
+        <Html>
+          <TextStyle>
+            <div className='title'>{name}</div>
+            <div className='sub'>
+              {codec}, {resolution}
+              <br />
+              {algorithm}
+            </div>
+          </TextStyle>
+        </Html>
       </mesh>
 
       <spotLight
@@ -48,11 +92,15 @@ function CCTV({ position, rotation, angle }) {
         shadow-blurSample={8} // 그림자 흐림도
         shadow-bias={-0.0005} // 그림자 매핑 시 간격
         castShadow
-        color={0x3cff7d}
+        color={isAlarm ? 0xff0000 : 0x3cff7d}
         intensity={500}
         position={position}
-        target-position={calLightPosition(position, rotation)}
-        angle={angle}
+        target-position={calLightPosition(position, [
+          THREE.MathUtils.degToRad(rotation[0]),
+          THREE.MathUtils.degToRad(rotation[1]),
+          THREE.MathUtils.degToRad(rotation[2]),
+        ])}
+        angle={THREE.MathUtils.degToRad(angle)}
         distance={50}
         penumbra={0.1}
       />
@@ -60,7 +108,47 @@ function CCTV({ position, rotation, angle }) {
   );
 }
 
+function Light() {
+  return (
+    <>
+      <ambientLight color='#ffffff' intensity={4} />
+      <directionalLight
+        position={[6, 10, 5]}
+        intensity={1}
+        angle={0.45}
+        castShadow
+        shadow-mapSize-width={1024}
+        shadow-mapSize-height={1024}
+        shadow-camera-near={0.5}
+        shadow-camera-far={500}
+        shadow-bias={-0.002}
+        shadow-camera-top={300}
+        shadow-camera-bottom={-300}
+        shadow-camera-left={-300}
+        shadow-camera-right={300}
+      />
+    </>
+  );
+}
+
+function GlbModel({ url }) {
+  const model = useGLTF(url);
+
+  useEffect(() => {
+    model.scene.traverse((obj) => {
+      if (obj.isMesh) {
+        obj.castShadow = true;
+        obj.receiveShadow = true;
+      }
+    });
+  }, [model.scene]);
+
+  return <primitive castShadow receiveShadow scale={1} object={model.scene} />;
+}
+
 const Map = () => {
+  const { cctvList } = useStore((state) => state);
+
   const floor1 = useGLTF('./models/map/cnsi-office/floor-1.glb');
 
   useEffect(() => {
@@ -75,42 +163,15 @@ const Map = () => {
   return (
     <>
       <OrbitControls />
-      <axesHelper scale={100} />
-      <ambientLight color='#ffffff' intensity={5} />
-      <directionalLight
-        position={[6, 10, 5]}
-        intensity={0.5}
-        angle={0.45}
-        castShadow
-        shadow-mapSize-width={1024}
-        shadow-mapSize-height={1024}
-        shadow-camera-near={0.5}
-        shadow-camera-far={500}
-        shadow-bias={-0.002}
-        shadow-camera-top={300}
-        shadow-camera-bottom={-300}
-        shadow-camera-left={-300}
-        shadow-camera-right={300}
-      />
+      {/* <axesHelper scale={100} /> */}
 
-      <primitive castShadow receiveShadow scale={1} object={floor1.scene} />
+      <Light />
 
-      <CCTV
-        position={[38, 4, -35]}
-        rotation={[0, THREE.MathUtils.degToRad(-40), 0]}
-        angle={THREE.MathUtils.degToRad(40)}
-      />
-      <CCTV
-        position={[-2.5, 4, 10]}
-        rotation={[0, THREE.MathUtils.degToRad(-90), 0]}
-        angle={THREE.MathUtils.degToRad(70)}
-      />
+      <GlbModel url='./models/map/cnsi-office/floor-1.glb' />
 
-      <CCTV
-        position={[18.5, 4, -12]}
-        rotation={[0, THREE.MathUtils.degToRad(-45), 0]}
-        angle={THREE.MathUtils.degToRad(40)}
-      />
+      {cctvList.map((cctv) => (
+        <CCTV key={cctv.id} cctvInfo={cctv} />
+      ))}
     </>
   );
 };

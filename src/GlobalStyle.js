@@ -28,7 +28,7 @@ const GlobalStyle = createGlobalStyle`
     -webkit-user-select:none;
     -moz-user-select:none;
     -ms-user-select:none;
-    user-select:none
+    user-select:none;
   }
   
   body {
@@ -38,6 +38,11 @@ const GlobalStyle = createGlobalStyle`
     letter-spacing: 0.5px;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+
+    -webkit-user-select:none;
+    -moz-user-select:none;
+    -ms-user-select:none;
+    user-select:none;
   }
 
   /* &::-webkit-scrollbar {
