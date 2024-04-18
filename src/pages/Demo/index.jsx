@@ -1,14 +1,14 @@
 import { Canvas } from '@react-three/fiber';
 import Sidebar from './Sidebar';
 import Dashboard from './Dashboard';
-import Map from './Map';
+import Scene from './Scene';
 import styled from 'styled-components';
 
 const Demo = () => {
   return (
     <DemoBox>
       <Canvas shadows camera={{ fov: 12.5, position: [-67, 130, 175] }}>
-        <Map />
+        <Scene />
       </Canvas>
       <Sidebar />
       {/* <Dashboard /> */}

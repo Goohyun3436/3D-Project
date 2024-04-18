@@ -73,7 +73,7 @@ function CCTV({ cctvInfo, setCctvList }) {
 
   const model = useGLTF('./models/cctv/cctv_camera.glb');
 
-  function calLightPosition(position, rotation, distance = 1) {
+  const calLightPosition = (position, rotation, distance = 1) => {
     // 원점 A의 좌표
     const ax = position[0];
     const ay = position[1];
@@ -89,7 +89,7 @@ function CCTV({ cctvInfo, setCctvList }) {
     const bz = az + distance * Math.cos(phi);
 
     return [bx, by, bz];
-  }
+  };
 
   const light = useRef();
 
@@ -101,8 +101,52 @@ function CCTV({ cctvInfo, setCctvList }) {
     scene.remove(spotLightHelper.current);
   }, []);
 
+  useFrame((state) => {
+    const cctv = state.scene.getObjectByName(`cctv-${id}`);
+
+    if (isAlarm) {
+      if (cctv.children[0]) {
+        let newPo = new THREE.Vector3();
+        const targetPo = new THREE.Vector3();
+
+        cctv.children[0].getWorldPosition(targetPo);
+        const currentPo = state.camera.position.clone();
+        const dis = targetPo.distanceTo(currentPo);
+
+        if (dis > 150) {
+          const ratio = Math.min(dis / 150, 0.5);
+          newPo = currentPo.lerp(targetPo, 0.05 * ratio);
+          state.camera.position.copy(newPo);
+          state.camera.lookAt(targetPo);
+        } else {
+          state.camera.position.copy(currentPo);
+          state.camera.lookAt(targetPo);
+        }
+      }
+    }
+    //  else {
+    //   if (cctv.children[0]) {
+    //     let newPo = new THREE.Vector3();
+    //     const targetPo = new THREE.Vector3(-67, 130, 175);
+
+    //     const currentPo = state.camera.position.clone();
+    //     const dis = currentPo.distanceTo(targetPo);
+
+    //     if (dis > 150) {
+    //       const ratio = Math.min(dis / 150, 0.5);
+    //       newPo = currentPo.lerp(targetPo, 0.05 * ratio);
+    //       state.camera.position.copy(newPo);
+    //       state.camera.lookAt(targetPo);
+    //     } else {
+    //       state.camera.position.copy(currentPo);
+    //       state.camera.lookAt(targetPo);
+    //     }
+    //   }
+    // }
+  });
+
   return (
-    <>
+    <group name={`cctv-${id}`}>
       <mesh
         castShadow
         receiveShadow
@@ -156,7 +200,7 @@ function CCTV({ cctvInfo, setCctvList }) {
         distance={50}
         penumbra={0.1}
       />
-    </>
+    </group>
   );
 }
 
@@ -198,7 +242,7 @@ function GlbModel({ url }) {
   return <primitive castShadow receiveShadow scale={1} object={model.scene} />;
 }
 
-const Map = () => {
+const Scene = () => {
   const { cctvList, setCctvList } = useStore((state) => state);
 
   return (
@@ -217,4 +261,4 @@ const Map = () => {
   );
 };
 
-export default Map;
+export default Scene;
