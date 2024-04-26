@@ -1,7 +1,7 @@
 import { useRef, useEffect, useState, memo } from 'react';
 import useStore from '../../store';
 import * as THREE from 'three';
-import { Clone, Environment, Html, OrbitControls, Text, useGLTF, useHelper } from '@react-three/drei';
+import { CameraControls, Clone, Environment, Html, OrbitControls, Text, useGLTF, useHelper } from '@react-three/drei';
 import { useFrame, useThree } from '@react-three/fiber';
 import { IoIosClose } from 'react-icons/io';
 import styled from 'styled-components';
@@ -68,7 +68,7 @@ const VideoStyle = styled.div`
   }
 `;
 
-function CCTV({ cctvInfo, setCctvList }) {
+function CCTV({ cctvInfo, setCctvList, cameraControlsRef }) {
   const { id, name, url, resolution, codec, algorithm, position, rotation, angle, isAlarm, isLive } = cctvInfo;
 
   const model = useGLTF('./models/cctv/cctv_camera.glb');
@@ -91,9 +91,10 @@ function CCTV({ cctvInfo, setCctvList }) {
     return [bx, by, bz];
   };
 
+  const cctvRef = useRef();
   const light = useRef();
 
-  const { scene } = useThree();
+  const { scene, camera } = useThree();
 
   const spotLightHelper = useHelper(light, THREE.SpotLightHelper);
 
@@ -101,53 +102,26 @@ function CCTV({ cctvInfo, setCctvList }) {
     scene.remove(spotLightHelper.current);
   }, []);
 
-  useFrame((state) => {
-    const cctv = state.scene.getObjectByName(`cctv-${id}`);
-
+  useEffect(() => {
     if (isAlarm) {
-      if (cctv.children[0]) {
-        let newPo = new THREE.Vector3();
-        const targetPo = new THREE.Vector3();
-
-        cctv.children[0].getWorldPosition(targetPo);
-        const currentPo = state.camera.position.clone();
-        const dis = targetPo.distanceTo(currentPo);
-
-        if (dis > 150) {
-          const ratio = Math.min(dis / 150, 0.5);
-          newPo = currentPo.lerp(targetPo, 0.05 * ratio);
-          state.camera.position.copy(newPo);
-          state.camera.lookAt(targetPo);
-        } else {
-          state.camera.position.copy(currentPo);
-          state.camera.lookAt(targetPo);
-        }
-      }
+      cameraControlsRef.current.setLookAt(
+        position[0] - 20,
+        position[1] + 90,
+        position[2] + 150,
+        position[0],
+        position[1],
+        position[2],
+        true
+      );
+    } else {
+      cameraControlsRef.current.reset(true);
     }
-    //  else {
-    //   if (cctv.children[0]) {
-    //     let newPo = new THREE.Vector3();
-    //     const targetPo = new THREE.Vector3(-67, 130, 175);
-
-    //     const currentPo = state.camera.position.clone();
-    //     const dis = currentPo.distanceTo(targetPo);
-
-    //     if (dis > 150) {
-    //       const ratio = Math.min(dis / 150, 0.5);
-    //       newPo = currentPo.lerp(targetPo, 0.05 * ratio);
-    //       state.camera.position.copy(newPo);
-    //       state.camera.lookAt(targetPo);
-    //     } else {
-    //       state.camera.position.copy(currentPo);
-    //       state.camera.lookAt(targetPo);
-    //     }
-    //   }
-    // }
-  });
+  }, [isAlarm]);
 
   return (
     <group name={`cctv-${id}`}>
       <mesh
+        ref={cctvRef}
         castShadow
         receiveShadow
         position={position}
@@ -244,18 +218,22 @@ function GlbModel({ url }) {
 
 const Scene = () => {
   const { cctvList, setCctvList } = useStore((state) => state);
+  const cameraControlsRef = useRef();
 
   return (
     <>
       <OrbitControls />
+
       {/* <axesHelper scale={100} /> */}
+
+      <CameraControls ref={cameraControlsRef} />
 
       <Light />
 
       <GlbModel url='./models/map/cnsi-office/floor-1.glb' />
 
       {cctvList.map((cctv) => (
-        <CCTV key={cctv.id} cctvInfo={cctv} setCctvList={setCctvList} />
+        <CCTV key={cctv.id} cctvInfo={cctv} setCctvList={setCctvList} cameraControlsRef={cameraControlsRef} />
       ))}
     </>
   );
